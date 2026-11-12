@@ -10,7 +10,7 @@ from typing import Callable
 
 #Function to use for futher iterations
 def phi(x:float)-> float:
-    return  x-(math.log(x)-1/(1+x**2)) 
+    return  x-1*(math.log(x)-1/(1+x**2)) 
 
 #Iterator function
 def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict:
@@ -19,7 +19,7 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
       {"xk":float, "n_iter":int, "l_iter":list, "q": float, "status":str}
       "q" is a calculated coefficient of convergeance (based on last 10 results if possible)"""
     
-    limita=13000
+    limita=10**6
     #Fail switch for when iterations don't converge
     #limita means maximum number of iterations
 
@@ -28,7 +28,11 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
     l_iter=[xk]
 
     #iterator cycle
-    while  abs(xk-(xk:=func(xk)))>prec:
+    while  abs(xk-(xk:=func(xk)))>prec*(1-0.6)/0.6: 
+        #In this scenario derivative is positive, so correction factor was introduced
+        #Mind you, this correction factor could be not enough for all x0 but at least 
+        #it does its job where you would expect it to.
+
         n_iter+=1
         l_iter+=[xk]
 
@@ -37,12 +41,17 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
 
             print("Exceeded maximum iteration step")
 
-            n_q=12 if len(l_iter)>10 else len(l_iter) 
-            #checks if there are enough elements for full q calculation
+ #Calculates coefficient of convergeance if it is possilbe else defaults it to 1.0
 
-            q=sum(abs(l_iter[-i]-l_iter[-i-1])/(abs(l_iter[-i-1]-l_iter[-i-2])) 
-            for i in range(1,n_q-1) if abs(l_iter[i+1]-l_iter[i])!=0)/(n_q-2) if n_q>=3 else 1
-            #if it is not possible to calculate "q" it defaults to 1.0
+            n_q=12 if len(l_iter)>11 else len(l_iter) #checks if there are enough elements for full q calculation
+            
+            q_l=[abs(l_iter[-i]-l_iter[-i-1])/(abs(l_iter[-i-1]-l_iter[-i-2])) 
+            for i in range(1,n_q-1) 
+            if abs(l_iter[-i-1]-l_iter[-i-2])!=0] if n_q>=3 else [1]
+
+            q=sum(q_l)/len(q_l)
+
+           
 
             print(f"Mean coefficient of convergeance={q}")
 
@@ -53,11 +62,18 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
 
         status="Successful convergeance"
 
-        n_q=12 if len(l_iter)>12 else len(l_iter)
+#Same piece of code for calculating q
+        n_q=12 if len(l_iter)>11 else len(l_iter) 
 
-        q=sum(abs(l_iter[-i]-l_iter[-i-1])/(abs(l_iter[-i-1]-l_iter[-i-2]))      
-        for i in range(1,n_q-1) if abs(l_iter[i+1]-l_iter[i])!=0)/(n_q-2) if n_q>=3 else 1 
+        q_l=[abs(l_iter[-i]-l_iter[-i-1])/(abs(l_iter[-i-1]-l_iter[-i-2]))
+        for i in range(1,n_q-1) 
+        if abs(l_iter[-i-1]-l_iter[-i-2])!=0] if n_q>=3 else [1]
 
+        q=sum(q_l)/len(q_l)
+
+    """Thinking retrospectively It was worth to create a special function to calculate q.
+     Because this is barely readable for no good reason"""
+    
     return {"xk":xk,
             "n_iter":n_iter,
             "l_iter":l_iter, 
@@ -94,7 +110,7 @@ def save_results_to_file(d_result:dict):
 
 
 if __name__=="__main__":
-    a=solve_iteration(phi, 100000, 0.0001)
+    a=solve_iteration(phi, 13, 0.0001)
     print(f"xk={a["xk"]}","\n", f"n_iter={a["n_iter"]}","]\n", f"q={a["q"]}")
     print(a["status"])
     print("---------------------------")
