@@ -28,7 +28,7 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
     l_iter=[xk]
 
     #iterator cycle
-    while  abs(xk-(xk:=func(xk)))>prec*(1-0.6)/0.6: 
+    while  abs(xk-(xk:=func(xk)))>prec*(1-0.8)/0.8: 
         #In this scenario derivative is positive, so correction factor was introduced
         #Mind you, this correction factor could be not enough for all x0 but at least 
         #it does its job where you would expect it to.
@@ -51,10 +51,6 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
 
             q=sum(q_l)/len(q_l)
 
-           
-
-            print(f"Mean coefficient of convergeance={q}")
-
             status="Failed convergeance\n Exceeded maximum iteration step"
             break
     else:
@@ -73,7 +69,7 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
 
     """Thinking retrospectively It was worth to create a special function to calculate q.
      Because this is barely readable for no good reason"""
-    
+    print(f"Mean coefficient of convergeance={q}")
     return {"xk":xk,
             "n_iter":n_iter,
             "l_iter":l_iter, 
@@ -97,23 +93,47 @@ def save_results_to_file(d_result:dict):
         for i, x_n in enumerate(d_result["l_iter"], start=1):
             l1=len(f"{i}")
             l2=len(f"{x_n:.6f}")
-            res.write( f"|{" "*(0)}{i}{" "*(18-(l1-1))}|")
+            res.write( f"|{i}{" "*(18-(l1-1))}|")
 
-            #There are some reduments like *(0). It was used to try to center a number.
+            #There were* some reduments like *(0). It was used to try to center a number.
             #Even though attempts to center were successful the result wasn't satisfactory
-
-            res.write(f"{" "*(0)}{x_n:.6f}{" "*(15-l2 if Long_N<15 else Long_N-l2)}|\n")
+            
+            res.write(f"{x_n:.6f}{" "*(15-l2 if Long_N<15 else Long_N-l2)}|\n")
 
             #(l1-1)+(l1-1)//2 (redument that was used for centring)
-
+            #res.write( f"|{" "*(0)}{i}{" "*(18-(l1-1))}|") 
+            #No more reduments! Except for unnecessary comments
+            #But this way code feels more alive in this era of vibe coding, isn't it?
+            #How pitful that I would get rid of it in the final version
 
 
 
 if __name__=="__main__":
-    a=solve_iteration(phi, 13, 0.0001)
-    print(f"xk={a["xk"]}","\n", f"n_iter={a["n_iter"]}","]\n", f"q={a["q"]}")
-    print(a["status"])
-    print("---------------------------")
-    print(a["l_iter"] if len(a["l_iter"])<50 else a["l_iter"][-1:-20:-1])
-    print(len(a["l_iter"]),a["n_iter"])
-    save_results_to_file(a)
+    print("Method of simple iterations")
+    x0=...
+    preci=...
+    while x0==...:
+        
+        x0=input("Enter a number as a starting point for iterations:_")
+        try:    
+            x0=float(x0)
+        except ValueError:
+            x0=...
+            print("Try again")
+    print("Enter needed precision\n" \
+        "For example 0.0001 should return result actual root+-0.0001")
+    while preci==...:
+        preci=input("Enter there:_")
+        try:
+            preci=float(preci)
+        except ValueError:
+            print("Try again")
+            preci=...
+    Result_D=solve_iteration(phi,x0,preci)
+    print(f'Root:{Result_D["xk"]:.6f}')
+    print(f'Number of iterations{Result_D["n_iter"]}')
+    save_results_to_file(Result_D)
+    print("Full iteration report was recorded into results_variant_02.txt")
+    print(Result_D["status"])
+
+           
