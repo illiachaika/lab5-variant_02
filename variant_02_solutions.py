@@ -29,7 +29,7 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
 
     #iterator cycle
     while  abs(xk-(xk:=func(xk)))>prec*(1-0.8)/0.8: 
-        #In this scenario derivative is positive, so correction factor was introduced
+        #In this scenario derivative is mainly positive, so correction factor was introduced
         #Mind you, this correction factor could be not enough for all x0 but at least 
         #it does its job where you would expect it to.
 
@@ -85,27 +85,15 @@ def save_results_to_file(d_result:dict):
         res.write(f"Root: {d_result["xk"]:.6f}\n")
         res.write(f"|Degree of iteration|   {" "*((Long_N-15)//2)}X_N Value{" "*((Long_N-15)//2+(Long_N-15)%2)}   |\n")
         #Based on how long is our Long_N builds a table so it would be able to contain it
-        #Also this command keeps "X_N Value"          
-        
-        #res.write( f"|{" "*12}{1}{" "*6}|{" "*4}{1:.6f}{" "*3}|\n") (redument command for setting things up)
-        
+        #Also this command keeps "X_N Value" centered         
         #Iterations list turned into fine table
         for i, x_n in enumerate(d_result["l_iter"], start=1):
             l1=len(f"{i}")
             l2=len(f"{x_n:.6f}")
+
             res.write( f"|{i}{" "*(18-(l1-1))}|")
-
-            #There were* some reduments like *(0). It was used to try to center a number.
-            #Even though attempts to center were successful the result wasn't satisfactory
-            
             res.write(f"{x_n:.6f}{" "*(15-l2 if Long_N<15 else Long_N-l2)}|\n")
-
-            #(l1-1)+(l1-1)//2 (redument that was used for centring)
-            #res.write( f"|{" "*(0)}{i}{" "*(18-(l1-1))}|") 
-            #No more reduments! Except for unnecessary comments
-            #But this way code feels more alive in this era of vibe coding, isn't it?
-            #How pitful that I would get rid of it in the final version
-
+            #All of that to make "perfect table"
 
 
 if __name__=="__main__":
@@ -135,5 +123,3 @@ if __name__=="__main__":
     save_results_to_file(Result_D)
     print("Full iteration report was recorded into results_variant_02.txt")
     print(Result_D["status"])
-
-           
