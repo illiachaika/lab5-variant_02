@@ -83,16 +83,17 @@ def save_results_to_file(d_result:dict):
 
         res.write("Calculation result:\n")
         res.write(f"Root: {d_result["xk"]:.6f}\n")
-        res.write(f"|Degree of iteration|   {" "*((Long_N-15)//2)}X_N Value{" "*((Long_N-15)//2+(Long_N-15)%2)}   $\n")
+        res.write(f"|Degree of iteration|   {" "*((Long_N-15)//2)}X_N Value{" "*((Long_N-15)//2+(Long_N-15)%2)}   $")
         #Based on how long is our Long_N builds a table so it would be able to contain it
         #Also this command keeps "X_N Value" centered         
         #Iterations list turned into fine table
         for i, x_n in enumerate(d_result["l_iter"], start=1):
+            res.write("\n")
             l1=len(f"{i}")
             l2=len(f"{x_n:.6f}")
 
             res.write( f"|{i}{" "*(18-(l1-1))}|")
-            res.write(f"{x_n:.6f}{" "*(15-l2 if Long_N<15 else Long_N-l2)}{"$" if i%2==0 else "|"}\n")
+            res.write(f"{x_n:.6f}{" "*(15-l2 if Long_N<15 else Long_N-l2)}{"$" if i%2==0 else "|"}")
             #All of that to make "perfect table"
 
 
