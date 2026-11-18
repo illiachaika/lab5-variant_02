@@ -40,41 +40,30 @@ def solve_iteration(func: Callable[[float],float], x0: float, prec:float)-> dict
         if n_iter>limita:
 
             print("Exceeded maximum iteration step")
-
- #Calculates coefficient of convergeance if it is possilbe else defaults it to 1.0
-
-            n_q=12 if len(l_iter)>11 else len(l_iter) #checks if there are enough elements for full q calculation
-            
-            q_l=[abs(l_iter[-i]-l_iter[-i-1])/(abs(l_iter[-i-1]-l_iter[-i-2])) 
-            for i in range(1,n_q-1) 
-            if abs(l_iter[-i-1]-l_iter[-i-2])!=0] if n_q>=3 else [1]
-
-            q=sum(q_l)/len(q_l)
-
             status="Failed convergeance\n Exceeded maximum iteration step"
             break
     else:
         print("Success")
-
         status="Successful convergeance"
 
-#Same piece of code for calculating q
-        n_q=12 if len(l_iter)>11 else len(l_iter) 
+     #Calculates coefficient of convergeance if it is possilbe else defaults it to 1.0
 
-        q_l=[abs(l_iter[-i]-l_iter[-i-1])/(abs(l_iter[-i-1]-l_iter[-i-2]))
-        for i in range(1,n_q-1) 
-        if abs(l_iter[-i-1]-l_iter[-i-2])!=0] if n_q>=3 else [1]
+    n_q=12 if len(l_iter)>11 else len(l_iter) #checks if there are enough elements for full q calculation
+    
+    q_l=[abs(l_iter[-i]-l_iter[-i-1])/(abs(l_iter[-i-1]-l_iter[-i-2])) 
+    for i in range(1,n_q-1) 
+    if abs(l_iter[-i-1]-l_iter[-i-2])!=0] if n_q>=3 else [1]
 
-        q=sum(q_l)/len(q_l)
-
-    """Thinking retrospectively It was worth to create a special function to calculate q.
-     Because this is barely readable for no good reason"""
+    q=sum(q_l)/len(q_l)
     print(f"Mean coefficient of convergeance={q}")
     return {"xk":xk,
             "n_iter":n_iter,
             "l_iter":l_iter, 
             "q": q, 
             "status":status}
+
+
+
 def save_results_to_file(d_result:dict):
 
     with open("results_variant_02.txt", "w", encoding="utf-8") as res:
@@ -83,16 +72,17 @@ def save_results_to_file(d_result:dict):
 
         res.write("Calculation result:\n")
         res.write(f"Root: {d_result["xk"]:.6f}\n")
-        res.write(f"|Degree of iteration|   {" "*((Long_N-15)//2)}X_N Value{" "*((Long_N-15)//2+(Long_N-15)%2)}   |\n")
+        res.write(f"|Degree of iteration|   {" "*((Long_N-15)//2)}X_N Value{" "*((Long_N-15)//2+(Long_N-15)%2)}   $")
         #Based on how long is our Long_N builds a table so it would be able to contain it
         #Also this command keeps "X_N Value" centered         
         #Iterations list turned into fine table
         for i, x_n in enumerate(d_result["l_iter"], start=1):
+            res.write("\n")
             l1=len(f"{i}")
             l2=len(f"{x_n:.6f}")
 
             res.write( f"|{i}{" "*(18-(l1-1))}|")
-            res.write(f"{x_n:.6f}{" "*(15-l2 if Long_N<15 else Long_N-l2)}|\n")
+            res.write(f"{x_n:.6f}{" "*(15-l2 if Long_N<15 else Long_N-l2)}{"|"}")
             #All of that to make "perfect table"
 
 
